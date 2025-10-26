@@ -52,6 +52,31 @@ export default function HomePage() {
     }
   }, [language])
 
+  const errorMessage = useMemo(() => {
+    switch (language) {
+      case 'hi':
+        return 'सर्वम एआई तक पहुंचने में असमर्थ। कृपया थोड़ी देर में पुनः प्रयास करें।'
+      case 'ta':
+        return 'சர்வம் AI ஐ அணுக முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.'
+      case 'te':
+        return 'సర్వం AI ను చేరుకోలేకపోయాము. కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.'
+      case 'bn':
+        return 'সর্বম এআই-এ পৌঁছাতে অক্ষম। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।'
+      case 'mr':
+        return 'सर्वम एआय पर्यंत पोहोचण्यास अक्षम. कृपया थोड्या वेळाने पुन्हा प्रयत्न करा.'
+      case 'gu':
+        return 'સર્વમ AI સુધી પહોંચવામાં અસમર્થ. કૃપા કરીને થોડીવારમાં ફરી પ્રયાસ કરો.'
+      case 'kn':
+        return 'ಸರ್ವಂ AI ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.'
+      case 'ml':
+        return 'സർവം AI-യിലേക്ക് എത്താൻ കഴിയുന്നില്ല. ദയവായി കുറച്ച് സമയത്തിനുശേഷം വീണ്ടും ശ്രമിക്കുക.'
+      case 'pa':
+        return 'ਸਰਵਮ ਏਆਈ ਤੱਕ ਪਹੁੰਚਣ ਵਿੱਚ ਅਸਮਰੱਥ। ਕਿਰਪਾ ਕਰਕੇ ਥੋੜ੍ਹੀ ਦੇਰ ਬਾਅਦ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।'
+      default:
+        return 'Unable to reach Sarvam AI. Please retry in a moment.'
+    }
+  }, [language])
+
   const handleSend = useCallback(
     async (event?: React.FormEvent<HTMLFormElement>) => {
       event?.preventDefault()
@@ -84,7 +109,11 @@ export default function HomePage() {
         const data = await response.json()
 
         if (!response.ok) {
-          throw new Error(data?.error || 'Failed to fetch response from Sarvam AI.')
+          const fallbackReply = typeof data?.fallback === 'string' && data.fallback.trim().length > 0 ? data.fallback : FALLBACK_RESPONSE
+          const assistantMessage = createMessage('assistant', fallbackReply, language)
+          setMessages(prev => [...prev, assistantMessage])
+          setError(errorMessage)
+          return
         }
 
         const assistantMessage = createMessage('assistant', data.reply, language)
@@ -93,12 +122,12 @@ export default function HomePage() {
         console.error(err)
         const assistantMessage = createMessage('assistant', FALLBACK_RESPONSE, language)
         setMessages(prev => [...prev, assistantMessage])
-        setError('Unable to reach Sarvam AI. Please retry in a moment.')
+        setError(errorMessage)
       } finally {
         setIsLoading(false)
       }
     },
-    [inputValue, isLoading, language, messages],
+    [inputValue, isLoading, language, messages, errorMessage],
   )
 
   const handleResetConversation = () => {
