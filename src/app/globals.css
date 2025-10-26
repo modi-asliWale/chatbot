@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 min-h-screen;
+}
+
+.chat-container {
+  @apply max-w-4xl mx-auto flex flex-col gap-6 py-10 px-4 min-h-screen;
+}
+
+.message-list {
+  @apply flex flex-col gap-4 flex-1 overflow-y-auto rounded-3xl bg-slate-900/60 border border-slate-800 p-6;
+}
+
+.message {
+  @apply px-4 py-3 rounded-2xl max-w-[80%] leading-relaxed shadow-lg shadow-slate-900/50;
+}
+
+.message.user {
+  @apply self-end bg-primary-500/90 text-white;
+}
+
+.message.assistant {
+  @apply self-start bg-slate-800 text-slate-100 border border-slate-700;
+}
+
+.message-meta {
+  @apply text-xs uppercase tracking-wide text-slate-400 mb-1 flex items-center gap-2;
+}
+
+.language-selector {
+  @apply flex items-center gap-3 bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3;
+}
+
+.input-area {
+  @apply flex flex-col gap-3 bg-slate-900/70 border border-slate-800 rounded-3xl p-4;
+}
+
+input, textarea {
+  @apply bg-transparent text-slate-100 placeholder-slate-500 outline-none;
+}
+
+button {
+  @apply inline-flex items-center justify-center font-medium transition-colors;
+}
